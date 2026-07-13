@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Logotipo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #0A1628;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            background: #132044;
+            border-radius: 24px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border: 1px solid rgba(212, 175, 55, 0.1);
+        }
+        h1 {
+            color: #D4AF37;
+            font-size: 1.5rem;
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+        .logo-preview {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: #0A1628;
+            border-radius: 16px;
+            border: 1px solid rgba(212, 175, 55, 0.1);
+            min-height: 200px;
+            align-items: center;
+        }
+        .logo-display {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .logo-symbol {
+            width: 80px;
+            height: 80px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #D4AF37, #E8C84A);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: #0A1628;
+            font-family: 'Georgia', serif;
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.3);
+            position: relative;
+        }
+        .logo-symbol::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.3), transparent);
+            z-index: -1;
+        }
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        .logo-text .name {
+            font-family: 'Georgia', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #FFFFFF;
+            letter-spacing: 2px;
+            line-height: 1;
+        }
+        .logo-text .name span {
+            color: #D4AF37;
+        }
+        .logo-text .subtitle {
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 4px;
+            font-weight: 300;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .control-group label {
+            color: rgba(255,255,255,0.6);
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+            font-weight: 300;
+        }
+        .control-group input[type="text"] {
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.05);
+            color: #FFFFFF;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+        .control-group input[type="text"]:focus {
+            outline: none;
+            border-color: #D4AF37;
+            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+        .btn {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #D4AF37, #E8C84A);
+            color: #0A1628;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(212, 175, 55, 0.3);
+        }
+        .btn-secondary {
+            background: rgba(255,255,255,0.05);
+            color: #FFFFFF;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.1);
+        }
+        .btn-success {
+            background: #00FF88;
+            color: #0A1628;
+        }
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 255, 136, 0.3);
+        }
+        .color-options {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .color-option {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        .color-option.active {
+            border-color: #FFFFFF;
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+        .color-option.active::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .color-option.gold { background: linear-gradient(135deg, #D4AF37, #E8C84A); }
+        .color-option.blue { background: linear-gradient(135deg, #00D4FF, #00A8CC); }
+        .color-option.rose { background: linear-gradient(135deg, #FF6B6B, #FF4757); }
+        .color-option.purple { background: linear-gradient(135deg, #A855F7, #7C3AED); }
+        .color-option.green { background: linear-gradient(135deg, #00FF88, #00C853); }
+        
+        .size-options {
+            display: flex;
+            gap: 12px;
+        }
+        .size-option {
+            padding: 8px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: transparent;
+            color: rgba(255,255,255,0.6);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 0.8rem;
+        }
+        .size-option:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        .size-option.active {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: #D4AF37;
+            color: #D4AF37;
+        }
+        
+        .download-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        .format-options {
+            display: flex;
+            gap: 8px;
+            margin: 10px 0;
+        }
+        .format-btn {
+            padding: 8px 16px;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            background: transparent;
+            color: rgba(255,255,255,0.5);
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.3s;
+        }
+        .format-btn:hover {
+            border-color: #D4AF37;
+            color: #D4AF37;
+        }
+        .format-btn.active {
+            background: rgba(212, 175, 55, 0.2);
+            border-color: #D4AF37;
+            color: #D4AF37;
+        }
+        
+        @media (max-width: 480px) {
+            .container { padding: 20px; }
+            .logo-text .name { font-size: 1.5rem; }
+            .logo-symbol { width: 60px; height: 60px; font-size: 2rem; }
+            .btn-group { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>✦ GENERADOR DE LOGOTIPO ✦</h1>
+        
+        <div class="logo-preview">
+            <div class="logo-display" id="logoDisplay">
+                <div class="logo-symbol" id="logoSymbol">JG</div>
+                <div class="logo-text">
+                    <div class="name" id="logoName">Juan <span>García</span></div>
+                    <div class="subtitle" id="logoSubtitle">Ingeniero de Datos & AI</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label>NOMBRE COMPLETO</label>
+                <input type="text" id="nameInput" value="Juan García" placeholder="Tu nombre completo">
+            </div>
+            
+            <div class="control-group">
+                <label>INICIALES (2 letras)</label>
+                <input type="text" id="initialsInput" value="JG" maxlength="2" placeholder="JG" style="text-transform: uppercase;">
+            </div>
+            
+            <div class="control-group">
+                <label>SUBTÍTULO / PROFESIÓN</label>
+                <input type="text" id="subtitleInput" value="Ingeniero de Datos & AI" placeholder="Tu profesión">
+            </div>
+            
+            <div class="control-group">
+                <label>COLOR PRINCIPAL</label>
+                <div class="color-options" id="colorOptions">
+                    <div class="color-option active" data-color="gold" style="background: linear-gradient(135deg, #D4AF37, #E8C84A);"></div>
+                    <div class="color-option" data-color="blue" style="background: linear-gradient(135deg, #00D4FF, #00A8CC);"></div>
+                    <div class="color-option" data-color="rose" style="background: linear-gradient(135deg, #FF6B6B, #FF4757);"></div>
+                    <div class="color-option" data-color="purple" style="background: linear-gradient(135deg, #A855F7, #7C3AED);"></div>
+                    <div class="color-option" data-color="green" style="background: linear-gradient(135deg, #00FF88, #00C853);"></div>
+                </div>
+            </div>
+            
+            <div class="control-group">
+                <label>TAMAÑO DEL SÍMBOLO</label>
+                <div class="size-options" id="sizeOptions">
+                    <div class="size-option" data-size="small">Pequeño</div>
+                    <div class="size-option active" data-size="medium">Mediano</div>
+                    <div class="size-option" data-size="large">Grande</div>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn btn-success" id="downloadLogoBtn">
+                    <i class="fas fa-download"></i> DESCARGAR SVG
+                </button>
+            </div>
+            
+            <div class="download-section">
+                <label style="color: rgba(255,255,255,0.6); font-size: 0.8rem; letter-spacing: 1px;">FORMATOS DE DESCARGA</label>
+                <div class="format-options">
+                    <button class="format-btn active" data-format="svg">SVG</button>
+                    <button class="format-btn" data-format="png">PNG</button>
+                    <button class="format-btn" data-format="html">HTML</button>
+                </div>
+                <p style="color: rgba(255,255,255,0.3); font-size: 0.7rem; margin-top: 8px;">
+                    El formato SVG es vectorial y se escala sin pérdida de calidad.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const nameInput = document.getElementById('nameInput');
+        const initialsInput = document.getElementById('initialsInput');
+        const subtitleInput = document.getElementById('subtitleInput');
+        const logoSymbol = document.getElementById('logoSymbol');
+        const logoName = document.getElementById('logoName');
+        const logoSubtitle = document.getElementById('logoSubtitle');
+        const logoDisplay = document.getElementById('logoDisplay');
+        const colorOptions = document.querySelectorAll('.color-option');
+        const sizeOptions = document.querySelectorAll('.size-option');
+        const formatBtns = document.querySelectorAll('.format-btn');
+        
+        let selectedColor = '#D4AF37';
+        let selectedSize = 'medium';
+        let selectedFormat = 'svg';
+        
+        // Update logo in real-time
+        function updateLogo() {
+            const name = nameInput.value || 'Tu Nombre';
+            const initials = initialsInput.value.toUpperCase() || 'TN';
+            const subtitle = subtitleInput.value || 'Tu Profesión';
+            
+            // Update symbol
+            logoSymbol.textContent = initials;
+            
+            // Update name with color span
+            const nameParts = name.split(' ');
+            let firstName = nameParts[0] || 'Tu';
+            let lastName = nameParts.slice(1).join(' ') || 'Nombre';
+            
+            if (nameParts.length === 1) {
+                firstName = name;
+                lastName = '';
+            }
+            
+            logoName.innerHTML = `${firstName} ${lastName ? `<span>${lastName}</span>` : ''}`;
+            
+            // Update subtitle
+            logoSubtitle.textContent = subtitle;
+            
+            // Update symbol color
+            logoSymbol.style.background = `linear-gradient(135deg, ${selectedColor}, ${lightenColor(selectedColor, 20)})`;
+            
+            // Update size
+            const sizes = {
+                small: { symbol: '60px', text: '1.5rem', gap: '12px' },
+                medium: { symbol: '80px', text: '2rem', gap: '20px' },
+                large: { symbol: '100px', text: '2.5rem', gap: '25px' }
+            };
+            
+            const size = sizes[selectedSize];
+            logoSymbol.style.width = size.symbol;
+            logoSymbol.style.height = size.symbol;
+            logoSymbol.style.fontSize = `calc(${size.text} * 1.2)`;
+            logoName.style.fontSize = size.text;
+            logoDisplay.style.gap = size.gap;
+        }
+        
+        // Helper: Lighten color
+        function lightenColor(color, percent) {
+            const num = parseInt(color.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = Math.min(255, (num >> 16) + amt);
+            const G = Math.min(255, ((num >> 8) & 0x00FF) + amt);
+            const B = Math.min(255, (num & 0x0000FF) + amt);
+            return `#${(1 << 24 | R << 16 | G << 8 | B).toString(16).slice(1)}`;
+        }
+        
+        // Color selection
+        colorOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                colorOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                const colorMap = {
+                    gold: '#D4AF37',
+                    blue: '#00D4FF',
+                    rose: '#FF6B6B',
+                    purple: '#A855F7',
+                    green: '#00FF88'
+                };
+                selectedColor = colorMap[this.dataset.color] || '#D4AF37';
+                updateLogo();
+            });
+        });
+        
+        // Size selection
+        sizeOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                sizeOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+                selectedSize = this.dataset.size;
+                updateLogo();
+            });
+        });
+        
+        // Format selection
+        formatBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                formatBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedFormat = this.dataset.format;
+            });
+        });
+        
+        // Input events
+        nameInput.addEventListener('input', updateLogo);
+        initialsInput.addEventListener('input', function() {
+            this.value = this.value.toUpperCase().slice(0, 2);
+            updateLogo();
+        });
+        subtitleInput.addEventListener('input', updateLogo);
+        
+        // Download logo
+        document.getElementById('downloadLogoBtn').addEventListener('click', function() {
+            const name = nameInput.value || 'Logo';
+            const format = selectedFormat;
+            
+            if (format === 'svg') {
+                downloadSVG();
+            } else if (format === 'png') {
+                downloadPNG();
+            } else {
+                downloadHTML();
+            }
+        });
+        
+        // Generate SVG
+        function generateSVG() {
+            const name = nameInput.value || 'Tu Nombre';
+            const initials = initialsInput.value.toUpperCase() || 'TN';
+            const subtitle = subtitleInput.value || 'Tu Profesión';
+            const nameParts = name.split(' ');
+            const firstName = nameParts[0] || 'Tu';
+            const lastName = nameParts.slice(1).join(' ') || 'Nombre';
+            
+            const size = {
+                small: { symbol: 60, text: 24, gap: 12 },
+                medium: { symbol: 80, text: 32, gap: 20 },
+                large: { symbol: 100, text: 40, gap: 25 }
+            }[selectedSize];
+            
+            const symbolSize = size.symbol;
+            const fontSize = size.text;
+            const gap = size.gap;
+            const totalWidth = symbolSize + gap + 300;
+            const totalHeight = Math.max(symbolSize, fontSize * 1.5 + 30);
+            
+            return `<?xml version="1.0" encoding="UTF-8"?>
+<svg width="${totalWidth}" height="${totalHeight}" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+        <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" style="stop-color:${selectedColor};stop-opacity:1" />
+            <stop offset="100%" style="stop-color:${lightenColor(selectedColor, 30)};stop-opacity:1" />
+        </linearGradient>
+        <filter id="glow">
+            <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+            <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+        </filter>
+    </defs>
+    
+    <!-- Background Circle -->
+    <rect x="0" y="0" width="${symbolSize}" height="${symbolSize}" rx="${symbolSize / 6}" fill="url(#logoGradient)" filter="url(#glow)"/>
+    
+    <!-- Initials -->
+    <text x="${symbolSize / 2}" y="${symbolSize / 2 + fontSize * 0.4}" 
+          font-family="Georgia, serif" font-size="${symbolSize * 0.6}" 
+          font-weight="900" fill="#0A1628" text-anchor="middle" dominant-baseline="middle">
+        ${initials}
+    </text>
+    
+    <!-- Name -->
+    <text x="${symbolSize + gap}" y="${fontSize * 0.8}" 
+          font-family="Georgia, serif" font-size="${fontSize}" 
+          font-weight="700" fill="#FFFFFF">
+        ${firstName}
+    </text>
+    <text x="${symbolSize + gap + firstName.length * fontSize * 0.6 + 4}" y="${fontSize * 0.8}" 
+          font-family="Georgia, serif" font-size="${fontSize}" 
+          font-weight="700" fill="${selectedColor}">
+        ${lastName}
+    </text>
+    
+    <!-- Subtitle -->
+    <text x="${symbolSize + gap}" y="${fontSize * 1.8}" 
+          font-family="Arial, sans-serif" font-size="${fontSize * 0.35}" 
+          font-weight="300" fill="rgba(255,255,255,0.4)" letter-spacing="3">
+        ${subtitle.toUpperCase()}
+    </text>
+</svg>`;
+        }
+        
+        function downloadSVG() {
+            const svgContent = generateSVG();
+            const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            downloadFile(url, 'logo.svg');
+        }
+        
+        function downloadPNG() {
+            const svgContent = generateSVG();
+            const blob = new Blob([svgContent], { type: 'image/svg+xml' });
+            const url = URL.createObjectURL(blob);
+            
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                canvas.width = img.width * 2;
+                canvas.height = img.height * 2;
+                const ctx = canvas.getContext('2d');
+                ctx.scale(2, 2);
+                ctx.drawImage(img, 0, 0);
+                const pngUrl = canvas.toDataURL('image/png');
+                downloadFile(pngUrl, 'logo.png');
+                URL.revokeObjectURL(url);
+            };
+            img.src = url;
+        }
+        
+        function downloadHTML() {
+            const svgContent = generateSVG();
+            const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Logo</title>
+    <style>
+        body { 
+            margin: 0; 
+            background: #0A1628; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    ${svgContent}
+</body>
+</html>`;
+            const blob = new Blob([htmlContent], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            downloadFile(url, 'logo.html');
+        }
+        
+        function downloadFile(url, filename) {
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(url), 1000);
+        }
+        
+        // Initialize
+        updateLogo();
+    </script>
+</body>
+</html>
